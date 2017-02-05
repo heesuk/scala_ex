@@ -2,7 +2,16 @@ package ex5
 
 import scala.annotation.tailrec
 
-sealed trait Stream[+A]
+//sealed trait Stream[+A]
+sealed trait Stream[+A] {
+  def toList: List[A] = {  // why?
+    def go(s: Stream[A], acc: List[A]): List[A] = s match {
+      case Cons(h,t) => go(t(), h() :: acc)  // Cons(h(), acc) == h() :: acc
+      case _ => acc
+    }
+    go(this, List()).reverse
+  }
+}
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h:() => A, t:() => Stream[A]) extends Stream[A]
 
@@ -18,15 +27,14 @@ object Stream {
     if(as.isEmpty) empty 
     else cons(as.head, apply(as.tail: _*))
   }
-
-  def toList: List[A] = {
-    def go(s: Stream[A], acc: List[A]): List[A] = s match {
-      case Cons(h,t) => go(t(), h() :: acc)
-      case _ => acc
-    }
-    go(this, List()).reverse
-  }
-//  
+  
+  
 }
+
+object test {
+  def main(args: Array[String]) : Unit = 
+    println(Stream(1,2,3).toList)
+}
+
 
 
